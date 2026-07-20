@@ -26,7 +26,33 @@ See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/
 
 ## Get Started
 
-Ready to start developing? The [Get Started with Salesforce DX](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_get_started_dx.htm) guide walks you through your first project, from creating a scratch org to creating a simple Apex class or LWC to deploying your code to a sandbox.
+### Project setup
+
+1. Install npm dependencies
+    ```bash
+    cd force-app\main\default\uiBundles\myreactapp
+    npm install
+    ```
+2. Login to salesforce through SFDX CLI:
+    ```bash
+    sf org login web
+    ```
+
+### Deployment
+
+1. Open react project directory
+    ```
+    cd force-app\main\default\uiBundles\myreactapp
+    ```
+
+2. Build the project
+    ```bash
+    npm run build
+    ```
+3. Deploy on salesforce
+    ```
+    sf project deploy start --source-dir . --target-org <username>
+    ```
 
 ## Common Salesforce CLI Commands
 
@@ -42,18 +68,3 @@ Here are common CLI commands that you'll use the most:
 - `sf data <command>`: Work with test data
 - `sf alias <command>`: Manage org aliases
 - `sf config <command>`: Configure CLI settings
-
-## Use Agentforce Vibes to Build Lightning Apps
-
-Transform your ideas into custom Lightning apps that extend CRM workflows directly in Lightning Experience. Through natural conversations with Agentforce Vibes, implement custom objects and fields, complex business logic, and dynamic UI components. See [Build a Lightning App Using Agentforce Vibes](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/lexapp-overview.html).
-
-## Additional Resources
-
-- [Agentforce Vibes Developer Guide](https://developer.salesforce.com/docs/platform/einstein-for-devs/guide/einstein-overview.html)
-- [Salesforce CLI Installation Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/)
-- [Salesforce CLI Plugin Development Guide](https://developer.salesforce.com/docs/platform/salesforce-cli-plugin/guide/conceptual-overview.html)
-- [Salesforce VS Code Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-
-sf project deploy start --target-org vardh.harsh404.8393fdcafcc1@agentforce.com --source-dir .
