@@ -1,0 +1,12 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true
+    }
+  ],
+  "name": "my-react-project",
+  "namespace": "",
+  "sfdcLoginUrl": "https://orgfarm-761c350dcf-dev-ed.develop.my.salesforce-setup.com/",
+  "sourceApiVersion": "67.0"
+}
