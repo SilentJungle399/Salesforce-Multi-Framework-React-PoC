@@ -13,12 +13,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
-import {
   Table,
   TableBody,
   TableCell,
@@ -56,7 +50,6 @@ function SummaryCard({
         <div className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
           {value}
         </div>
-        <p className="mt-2 text-sm text-slate-500">{hint}</p>
       </CardContent>
     </Card>
   );
@@ -64,21 +57,20 @@ function SummaryCard({
 
 function SectionShell({
   title,
-  description,
   recordsLabel,
   children,
 }: {
   title: string;
-  description: string;
   recordsLabel: string;
   children: ReactNode;
 }) {
   return (
-    <Card className="border-slate-200/80 bg-white/85 shadow-xl shadow-slate-200/60 backdrop-blur gap-0 pb-0">
-      <CardHeader className="space-y-2 border-b border-slate-100">
-        <div className="flex flex-wrap items-start justify-between ">
+    <Card className="h-full border-slate-200/80 bg-white/85 shadow-xl shadow-slate-200/60 backdrop-blur pb-0 gap-0">
+      <CardHeader className="space-y-2 border-b border-slate-100 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <CardTitle className="text-xl text-slate-950">{title}</CardTitle>
+
           </div>
           <Badge
             variant="outline"
@@ -156,31 +148,101 @@ export default function Home() {
           </Card>
         ) : null}
 
-        <ObjectStoryboard
-          accounts={accounts.records}
-          contacts={contacts.records}
-          testObjects={testObjects.records}
-        />
+        <section className="grid gap-4 lg:grid-cols-12">
+          <div className="lg:col-span-12">
+            <SectionShell
+              title="Operational relationship map"
+              recordsLabel="dashboard tile"
+            >
+              <div className="p-4">
+                <ObjectStoryboard
+                  accounts={accounts.records}
+                  contacts={contacts.records}
+                  testObjects={testObjects.records}
+                />
+              </div>
+            </SectionShell>
+          </div>
 
-        <Tabs defaultValue="accounts" className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-3 bg-slate-100 p-1">
-            <TabsTrigger value="accounts">Accounts</TabsTrigger>
-            <TabsTrigger value="contacts">Contacts</TabsTrigger>
-            <TabsTrigger value="testObjects">Test Objects</TabsTrigger>
-          </TabsList>
+          <div className="lg:col-span-7">
+            <SectionShell
+              title="Contacts"
+              recordsLabel={`${contacts.records.length} records`}
+            >
+              <div className="max-h-[22rem] overflow-auto">
+                {contacts.loading ? (
+                  <LoadingTable columns={3} />
+                ) : contacts.records.length === 0 ? (
+                  <div className="p-6 text-sm text-slate-500">No contact records were returned.</div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
+                        <TableHead>Name</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Department</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {contacts.records.map((record) => (
+                        <TableRow key={`${record.name}-${record.email}`}>
+                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
+                          <TableCell>{record.title || '—'}</TableCell>
+                          <TableCell>{record.department || '—'}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </SectionShell>
+          </div>
+          <div className="lg:col-span-5">
+            <SectionShell
+              title="Test Objects"
+              recordsLabel={`${testObjects.records.length} records`}
+            >
+              <div className="max-h-[18rem] overflow-auto">
+                {testObjects.loading ? (
+                  <LoadingTable columns={3} />
+                ) : testObjects.records.length === 0 ? (
+                  <div className="p-6 text-sm text-slate-500">No custom object records were returned.</div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
+                        <TableHead>Name</TableHead>
+                        <TableHead>Test Value</TableHead>
+                        <TableHead>Address</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {testObjects.records.map((record) => (
+                        <TableRow key={`${record.name}-${record.address}`}>
+                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
+                          <TableCell>{record.testValue}</TableCell>
+                          <TableCell className="text-slate-600">{record.address}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </SectionShell>
+          </div>
+        </section>
 
-          <TabsContent value="accounts" className="mt-4">
+          <div className="lg:col-span-12">
             <SectionShell
               title="Accounts"
-              description="Operational account data rendered as a clean summary table with business-friendly formatting."
               recordsLabel={`${accounts.records.length} records`}
             >
-              {accounts.loading ? (
-                <LoadingTable columns={6} />
-              ) : accounts.records.length === 0 ? (
-                <div className="p-6 text-sm text-slate-500">No account records were returned.</div>
-              ) : (
-                <div className="overflow-x-auto">
+              <div className="max-h-[22rem] overflow-auto">
+                {accounts.loading ? (
+                  <LoadingTable columns={6} />
+                ) : accounts.records.length === 0 ? (
+                  <div className="p-6 text-sm text-slate-500">No account records were returned.</div>
+                ) : (
                   <Table>
                     <TableHeader>
                       <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
@@ -211,96 +273,10 @@ export default function Home() {
                       ))}
                     </TableBody>
                   </Table>
-                </div>
-              )}
+                )}
+              </div>
             </SectionShell>
-          </TabsContent>
-
-          <TabsContent value="contacts" className="mt-4">
-            <SectionShell
-              title="Contacts"
-              description="A contact experience that emphasizes communication details and source context."
-              recordsLabel={`${contacts.records.length} records`}
-            >
-              {contacts.loading ? (
-                <LoadingTable columns={7} />
-              ) : contacts.records.length === 0 ? (
-                <div className="p-6 text-sm text-slate-500">No contact records were returned.</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
-                        <TableHead>Name</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Phone</TableHead>
-                        <TableHead>Lead Source</TableHead>
-                        <TableHead>Languages</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {contacts.records.map((record) => (
-                        <TableRow key={`${record.name}-${record.email}`}>
-                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
-                          <TableCell>{record.title || '—'}</TableCell>
-                          <TableCell>{record.department || '—'}</TableCell>
-                          <TableCell className="text-slate-600">{record.email || '—'}</TableCell>
-                          <TableCell>{record.phone || '—'}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{record.leadSource || 'N/A'}</Badge>
-                          </TableCell>
-                          <TableCell>{record.languages || '—'}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </SectionShell>
-          </TabsContent>
-
-          <TabsContent value="testObjects" className="mt-4">
-            <SectionShell
-              title="Test Objects"
-              description="A small custom object surface that proves the pattern works for non-standard data shapes too."
-              recordsLabel={`${testObjects.records.length} records`}
-            >
-              {testObjects.loading ? (
-                <LoadingTable columns={3} />
-              ) : testObjects.records.length === 0 ? (
-                <div className="p-6 text-sm text-slate-500">No custom object records were returned.</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
-                        <TableHead>Name</TableHead>
-                        <TableHead>Test Value</TableHead>
-                        <TableHead>Address</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {testObjects.records.map((record) => (
-                        <TableRow key={`${record.name}-${record.address}`}>
-                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
-                          <TableCell>{record.testValue}</TableCell>
-                          <TableCell className="text-slate-600">{record.address}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </SectionShell>
-          </TabsContent>
-        </Tabs>
-
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-2 text-sm text-slate-500">
-          <span>Built with Redux slices, Salesforce GraphQL, shadcn UI, and Tailwind CSS.</span>
-          <span>Responsive layout optimized for quick proof-of-concept demos.</span>
-        </div>
+          </div>
       </div>
     </div>
   );

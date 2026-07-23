@@ -1,4 +1,4 @@
-import { Building2, Users, Boxes, ArrowRight, Landmark, Mail, MapPin } from 'lucide-react';
+import { Building2, Users, Boxes } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import type { AccountRecord } from '@/store/slices/AccountsSlice';
 import type { ContactRecord } from '@/store/slices/ContactsSlice';
 import type { TestObjectRecord } from '@/store/slices/testObjectSlice';
@@ -53,14 +52,12 @@ function MetricBar({
 function ObjectCard({
   icon,
   title,
-  description,
   badge,
   metrics,
   accentClassName,
 }: {
   icon: React.ReactNode;
   title: string;
-  description: string;
   badge: string;
   metrics: Array<{ label: string; value: string; percent: number }>;
   accentClassName: string;
@@ -76,7 +73,6 @@ function ObjectCard({
             </div>
             <div>
               <CardTitle className="text-xl text-slate-950">{title}</CardTitle>
-              <CardDescription className="mt-1 text-slate-600">{description}</CardDescription>
             </div>
           </div>
           <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
@@ -139,7 +135,6 @@ export function ObjectStoryboard({
         <ObjectCard
           icon={<Building2 className="h-5 w-5" />}
           title="Accounts"
-          description="Business context, ownership, rating, revenue, and employee scale."
           badge={`${accounts.length} records`}
           accentClassName="bg-gradient-to-r from-cyan-500 to-sky-500"
           metrics={[
@@ -164,7 +159,6 @@ export function ObjectStoryboard({
         <ObjectCard
           icon={<Users className="h-5 w-5" />}
           title="Contacts"
-          description="Who the business talks to, how they reached us, and the team they belong to."
           badge={`${contacts.length} records`}
           accentClassName="bg-gradient-to-r from-amber-500 to-orange-500"
           metrics={[
@@ -189,7 +183,6 @@ export function ObjectStoryboard({
         <ObjectCard
           icon={<Boxes className="h-5 w-5" />}
           title="Test Object"
-          description="A custom object that proves the same pattern works beyond standard CRM data."
           badge={`${testObjects.length} records`}
           accentClassName="bg-gradient-to-r from-violet-500 to-fuchsia-500"
           metrics={[
