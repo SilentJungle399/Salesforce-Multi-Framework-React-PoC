@@ -7,7 +7,6 @@ import { ObjectStoryboard } from '@/components/dashboard/data-storyboard';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -34,26 +33,6 @@ function formatNumber(value: number) {
   return new Intl.NumberFormat('en-US').format(value);
 }
 
-function SummaryCard({
-  label,
-  value,
-  hint,
-}: {
-  label: string;
-  value: string;
-  hint: string;
-}) {
-  return (
-    <Card className="border-slate-200/80 bg-white/80 shadow-sm backdrop-blur">
-      <CardContent className="pt-6">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
-        <div className="mt-2 text-3xl font-semibold tracking-tight text-slate-950">
-          {value}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 function SectionShell({
   title,
@@ -132,8 +111,6 @@ export default function Home() {
     dispatch(fetchTestObjects());
   }, [dispatch]);
 
-  const totalRecords =
-    accounts.records.length + contacts.records.length + testObjects.records.length;
   const anyError = accounts.error ?? contacts.error ?? testObjects.error;
 
   return (

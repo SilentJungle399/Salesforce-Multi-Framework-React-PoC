@@ -31,21 +31,21 @@ Before you start, make sure you have:
 - **Digital Experiences enabled** - In your Salesforce org, navigate to **Setup → Digital Experiences → Settings**, enable **Digital Experiences**, and configure a domain if prompted. This is required to deploy and access Experience Cloud applications.
 - **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under **Setup → Dev Hub**. See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
 
+
 ## Get Started
 
-### Project setup
-
-1. Install npm dependencies
+1. Login to salesforce through SFDX CLI and then create a new external app:
+    ```bash
+    sf org login web
+    sf template generate project --name MyReactProject --template reactexternalapp
+    ```
+2. Open react project and install dependencies:
     ```bash
     cd force-app\main\default\uiBundles\MyReactProject
     npm install
     ```
-2. Login to salesforce through SFDX CLI:
-    ```bash
-    sf org login web
-    ```
 
-### Deployment
+## Deployment
 
 1. Open react project directory
     ```
