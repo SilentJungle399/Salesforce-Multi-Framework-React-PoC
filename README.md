@@ -1,8 +1,24 @@
-# Salesforce DX Project
+# React External App
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+An external React starter template for customer-facing apps on the Salesforce platform. Includes authentication, global search, and an Experience Cloud site container. Built with React, Vite, TypeScript, and Tailwind/shadcn.
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+## What's included
+
+```
+force-app/main/default/
+├── classes/                      # Apex Auth Logic
+│   ├── UIBundleAuthUtils.cls
+│   ├── UIBundleChangePassword.cls
+│   ├── UIBundleForgotPassword.cls
+│   ├── UIBundleLogin.cls
+│   └── UIBundleRegistration.cls
+├── digitalExperienceConfigs/     # Site configuration
+├── digitalExperiences/           # Site definition & branding
+├── networks/                     # Experience Cloud network setup
+├── sites/                        # Salesforce Site metadata
+└── uiBundles/
+    └── MyReactProject/         # React UI Bundle (source, config, tests)
+```
 
 ## Prerequisites
 
@@ -10,19 +26,10 @@ Before you start, make sure you have:
 
 - **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
 - **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
+- **Node.js (LTS)** - Required to install project dependencies and run the React development server.
 - **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
-
-## Project Structure
-
-Your DX project follows this structure:
-
-- **`force-app/main/default/`** - Your metadata source files live in this default package directory. You can configure additional package directories in the `sfdx-project.json` file.
-- **`config/`** - Scratch org definitions and project settings
-- **`scripts/`** - Automation scripts for common tasks
-- **`sfdx-project.json`** - Project manifest that defines package directories, namespace, API version, and other project-level settings
-
-See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm).
+- **Digital Experiences enabled** - In your Salesforce org, navigate to **Setup → Digital Experiences → Settings**, enable **Digital Experiences**, and configure a domain if prompted. This is required to deploy and access Experience Cloud applications.
+- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under **Setup → Dev Hub**. See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
 
 ## Get Started
 
@@ -30,7 +37,7 @@ See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/
 
 1. Install npm dependencies
     ```bash
-    cd force-app\main\default\uiBundles\myreactapp
+    cd force-app\main\default\uiBundles\MyReactProject
     npm install
     ```
 2. Login to salesforce through SFDX CLI:
@@ -42,7 +49,7 @@ See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/
 
 1. Open react project directory
     ```
-    cd force-app\main\default\uiBundles\myreactapp
+    cd force-app\main\default\uiBundles\MyReactProject
     ```
 
 2. Build the project
@@ -51,7 +58,7 @@ See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/
     ```
 3. Deploy on salesforce
     ```
-    sf project deploy start --source-dir . --target-org <username>
+    sf project deploy start --target-org <username>
     ```
 
 ## Common Salesforce CLI Commands
