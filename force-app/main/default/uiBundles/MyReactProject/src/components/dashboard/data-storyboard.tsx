@@ -1,4 +1,4 @@
-import { Building2, Users, Boxes } from 'lucide-react';
+import { Building2, Users } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/card';
 import type { AccountRecord } from '@/store/slices/AccountsSlice';
 import type { ContactRecord } from '@/store/slices/ContactsSlice';
-import type { TestObjectRecord } from '@/store/slices/testObjectSlice';
 
 function countBy<T>(items: T[], selector: (item: T) => string) {
   return items.reduce<Record<string, number>>((accumulator, item) => {
@@ -96,11 +95,9 @@ function ObjectCard({
 export function ObjectStoryboard({
   accounts,
   contacts,
-  testObjects,
 }: {
   accounts: AccountRecord[];
   contacts: ContactRecord[];
-  testObjects: TestObjectRecord[];
 }) {
   const accountTypes = countBy(accounts, (record) => record.type);
   const accountIndustries = countBy(accounts, (record) => record.industry);
@@ -113,12 +110,6 @@ export function ObjectStoryboard({
 
   const accountRevenue = accounts.reduce((total, record) => total + (record.annualRevenue || 0), 0);
   const accountEmployees = accounts.reduce((total, record) => total + (record.numberOfEmployees || 0), 0);
-  const avgTestValueLength = testObjects.length
-    ? Math.round(
-        testObjects.reduce((total, record) => total + (record.testValue?.length ?? 0), 0) /
-          testObjects.length
-      )
-    : 0;
 
   const maxCategoryCount = Math.max(
     accountTopType?.[1] ?? 1,
@@ -130,7 +121,7 @@ export function ObjectStoryboard({
 
   return (
     <section className="space-y-6">
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2">
         <ObjectCard
           icon={<Building2 className="h-5 w-5" />}
           title="Accounts"
@@ -179,29 +170,6 @@ export function ObjectStoryboard({
           ]}
         />
 
-        <ObjectCard
-          icon={<Boxes className="h-5 w-5" />}
-          title="Test Object"
-          badge={`${testObjects.length} records`}
-          accentClassName="bg-gradient-to-r from-violet-500 to-fuchsia-500"
-          metrics={[
-            {
-              label: 'Field depth',
-              value: '3 exposed fields',
-              percent: 100,
-            },
-            {
-              label: 'Address coverage',
-              value: testObjects.some((record) => Boolean(record.address)) ? 'Address captured' : 'No address yet',
-              percent: testObjects.length ? 100 : 0,
-            },
-            {
-              label: 'Value length signal',
-              value: avgTestValueLength > 0 ? `${avgTestValueLength} chars avg` : 'No values yet',
-              percent: testObjects.length ? 100 : 0,
-            },
-          ]}
-        />
       </div>
     </section>
   );

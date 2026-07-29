@@ -1,9 +1,11 @@
+import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js';
 import { useEffect, type ReactNode } from 'react';
+import { Pie } from 'react-chartjs-2';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchAccounts } from '@/store/slices/AccountsSlice';
 import { fetchContacts } from '@/store/slices/ContactsSlice';
-import { fetchTestObjects } from '@/store/slices/testObjectSlice';
 import { ObjectStoryboard } from '@/components/dashboard/data-storyboard';
+import RevenueBarChart from '@/components/dashboard/revenue-bar-chart';
 import {
   Card,
   CardContent,
@@ -20,6 +22,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-US', {
@@ -40,7 +44,7 @@ function SectionShell({
   children,
 }: {
   title: string;
-  recordsLabel: string;
+  recordsLabel?: string | undefined;
   children: ReactNode;
 }) {
   return (
@@ -51,12 +55,12 @@ function SectionShell({
             <CardTitle className="text-xl text-slate-950">{title}</CardTitle>
 
           </div>
-          <Badge
+          {recordsLabel && (<Badge
             variant="outline"
             className="border-slate-200 bg-slate-50 text-slate-700"
           >
             {recordsLabel}
-          </Badge>
+          </Badge>)}
         </div>
       </CardHeader>
       <CardContent className="p-0">{children}</CardContent>
@@ -103,15 +107,47 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const accounts = useAppSelector((state) => state.accounts);
   const contacts = useAppSelector((state) => state.contacts);
-  const testObjects = useAppSelector((state) => state.testObjects);
 
   useEffect(() => {
     dispatch(fetchAccounts());
     dispatch(fetchContacts());
-    dispatch(fetchTestObjects());
   }, [dispatch]);
 
-  const anyError = accounts.error ?? contacts.error ?? testObjects.error;
+  const anyError = accounts.error ?? contacts.error;
+
+  const departmentCounts = contacts.records.reduce<Record<string, number>>((accumulator, record) => {
+    const department = record.department || 'Unspecified';
+    accumulator[department] = (accumulator[department] ?? 0) + 1;
+    return accumulator;
+  }, {});
+
+  const departmentChartData = {
+    labels: Object.keys(departmentCounts),
+    datasets: [
+      {
+        data: Object.values(departmentCounts),
+        backgroundColor: ['#0ea5e9', '#f59e0b', '#8b5cf6', '#10b981', '#ef4444', '#64748b'],
+        borderColor: '#ffffff',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const departmentChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: { label: string; parsed: number }) =>
+            `${context.label}: ${context.parsed} contacts`,
+        },
+      },
+    },
+  };
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.16),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(251,191,36,0.12),_transparent_28%),linear-gradient(180deg,_#f8fafc_0%,_#ffffff_55%,_#f8fafc_100%)]">
@@ -129,13 +165,11 @@ export default function Home() {
           <div className="lg:col-span-12">
             <SectionShell
               title="Operational relationship map"
-              recordsLabel="dashboard tile"
             >
               <div className="p-4">
                 <ObjectStoryboard
                   accounts={accounts.records}
                   contacts={contacts.records}
-                  testObjects={testObjects.records}
                 />
               </div>
             </SectionShell>
@@ -146,7 +180,7 @@ export default function Home() {
               title="Contacts"
               recordsLabel={`${contacts.records.length} records`}
             >
-              <div className="max-h-[22rem] overflow-auto">
+              <div className="max-h-[18rem] overflow-auto">
                 {contacts.loading ? (
                   <LoadingTable columns={3} />
                 ) : contacts.records.length === 0 ? (
@@ -176,84 +210,83 @@ export default function Home() {
           </div>
           <div className="lg:col-span-5">
             <SectionShell
-              title="Test Objects"
-              recordsLabel={`${testObjects.records.length} records`}
+              title="Contacts by Department"
             >
-              <div className="max-h-[18rem] overflow-auto">
-                {testObjects.loading ? (
-                  <LoadingTable columns={3} />
-                ) : testObjects.records.length === 0 ? (
-                  <div className="p-6 text-sm text-slate-500">No custom object records were returned.</div>
+              <div className="p-4">
+                {contacts.loading ? (
+                  <LoadingTable columns={1} />
+                ) : contacts.records.length === 0 ? (
+                  <div className="p-6 text-sm text-slate-500">No contact records were returned.</div>
                 ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
-                        <TableHead>Name</TableHead>
-                        <TableHead>Test Value</TableHead>
-                        <TableHead>Address</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {testObjects.records.map((record) => (
-                        <TableRow key={`${record.name}-${record.address}`}>
-                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
-                          <TableCell>{record.testValue}</TableCell>
-                          <TableCell className="text-slate-600">{record.address}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <div className="h-64">
+                    <Pie data={departmentChartData} options={departmentChartOptions} />
+                  </div>
                 )}
               </div>
             </SectionShell>
           </div>
         </section>
 
-          <div className="lg:col-span-12">
-            <SectionShell
-              title="Accounts"
-              recordsLabel={`${accounts.records.length} records`}
-            >
-              <div className="max-h-[22rem] overflow-auto">
-                {accounts.loading ? (
-                  <LoadingTable columns={6} />
-                ) : accounts.records.length === 0 ? (
-                  <div className="p-6 text-sm text-slate-500">No account records were returned.</div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
-                        <TableHead>Name</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead>Industry</TableHead>
-                        <TableHead>Rating</TableHead>
-                        <TableHead>Employees</TableHead>
-                        <TableHead className="text-right">Annual Revenue</TableHead>
+        <div className="lg:col-span-12">
+          <SectionShell
+            title="Accounts"
+            recordsLabel={`${accounts.records.length} records`}
+          >
+            <div className="max-h-[22rem] overflow-auto">
+              {accounts.loading ? (
+                <LoadingTable columns={6} />
+              ) : accounts.records.length === 0 ? (
+                <div className="p-6 text-sm text-slate-500">No account records were returned.</div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-slate-100 bg-slate-50/80 hover:bg-slate-50">
+                      <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Industry</TableHead>
+                      <TableHead>Rating</TableHead>
+                      <TableHead>Employees</TableHead>
+                      <TableHead className="text-right">Annual Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {accounts.records.map((record) => (
+                      <TableRow key={`${record.name}-${record.accountNumber}`}>
+                        <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
+                        <TableCell>{record.type || '—'}</TableCell>
+                        <TableCell>{record.industry || '—'}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className="bg-slate-100 text-slate-700">
+                            {record.rating || 'N/A'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{formatNumber(record.numberOfEmployees)}</TableCell>
+                        <TableCell className="text-right font-medium">
+                          {formatCurrency(record.annualRevenue)}
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {accounts.records.map((record) => (
-                        <TableRow key={`${record.name}-${record.accountNumber}`}>
-                          <TableCell className="font-medium text-slate-950">{record.name}</TableCell>
-                          <TableCell>{record.type || '—'}</TableCell>
-                          <TableCell>{record.industry || '—'}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-slate-100 text-slate-700">
-                              {record.rating || 'N/A'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{formatNumber(record.numberOfEmployees)}</TableCell>
-                          <TableCell className="text-right font-medium">
-                            {formatCurrency(record.annualRevenue)}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </div>
-            </SectionShell>
-          </div>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
+          </SectionShell>
+        </div>
+        <div className="lg:col-span-12">
+          <SectionShell
+            title="Accounts by Annual Revenue"
+          >
+            <div className="max-h-[24rem] overflow-auto">
+              {accounts.loading ? (
+                <LoadingTable columns={1} />
+              ) : accounts.records.length === 0 ? (
+                <div className="p-6 text-sm text-slate-500">No account records were returned.</div>
+              ) : (
+                <RevenueBarChart accounts={accounts.records} />
+              )}
+            </div>
+          </SectionShell>
+        </div>
       </div>
     </div>
   );
