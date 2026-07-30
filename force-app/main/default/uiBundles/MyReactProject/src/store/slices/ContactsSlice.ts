@@ -23,7 +23,7 @@ interface ContactNode {
 
 type ContactQueryResult = SalesforceObjectQueryResult<'Contact', ContactNode>;
 
-const TEST_OBJECT_QUERY = `
+const OBJECT_QUERY = `
   query GetContacts {
     uiapi {
       query {
@@ -64,7 +64,7 @@ const ContactCollection = createSalesforceObjectCollection<
   ContactQueryResult
 >({
   sliceName: 'Contacts',
-  query: TEST_OBJECT_QUERY,
+  query: OBJECT_QUERY,
   fallbackErrorMessage: 'Failed to fetch contacts',
   selectRecords: (data) =>
      data.uiapi.query.Contact.edges.map((edge) => ({

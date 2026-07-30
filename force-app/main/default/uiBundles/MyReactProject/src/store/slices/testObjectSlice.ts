@@ -15,7 +15,7 @@ interface TestObjectNode {
 
 type TestObjectQueryResult = SalesforceObjectQueryResult<'TestObject__c', TestObjectNode>;
 
-const TEST_OBJECT_QUERY = `
+const OBJECT_QUERY = `
   query GetTestObjects {
     uiapi {
       query {
@@ -44,7 +44,7 @@ const testObjectCollection = createSalesforceObjectCollection<
   TestObjectQueryResult
 >({
   sliceName: 'testObjects',
-  query: TEST_OBJECT_QUERY,
+  query: OBJECT_QUERY,
   fallbackErrorMessage: 'Failed to fetch test objects',
   selectRecords: (data) =>
     data.uiapi.query.TestObject__c.edges.map((edge) => ({

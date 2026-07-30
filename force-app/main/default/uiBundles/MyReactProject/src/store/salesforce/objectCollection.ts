@@ -33,6 +33,10 @@ export function createSalesforceObjectCollection<TRecord, TGraphQLData>(
       const data = await executeGraphQL<TGraphQLData, void>(definition.query);
       return definition.selectRecords(data);
     } catch (error) {
+      if (typeof window !== 'undefined') {
+        window.location.assign('/');
+      }
+
       return rejectWithValue(
         error instanceof Error
           ? error.message

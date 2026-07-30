@@ -27,7 +27,7 @@ interface AccountNode {
 
 type AccountQueryResult = SalesforceObjectQueryResult<'Account', AccountNode>;
 
-const TEST_OBJECT_QUERY = `
+const OBJECT_QUERY = `
   query GetAccounts {
     uiapi {
       query {
@@ -74,7 +74,7 @@ const AccountCollection = createSalesforceObjectCollection<
   AccountQueryResult
 >({
   sliceName: 'Accounts',
-  query: TEST_OBJECT_QUERY,
+  query: OBJECT_QUERY,
   fallbackErrorMessage: 'Failed to fetch Accounts',
   selectRecords: (data) =>
     data.uiapi.query.Account.edges.map((edge) => ({
